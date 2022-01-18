@@ -1,0 +1,41 @@
+To Reproduce
+
+Set up a cluster following the Wind River Cloud Platform documentation. 
+
+These tests were done on a system with 2xmaster ndoes, 2xworker nodes, and the WRCP21.12GA load. 
+
+Wind River Cloud Platform
+
+Release 21.12
+
+Wind River Systems, Inc.
+
+SW-VERSION="21.12" BUILD_TARGET="Host Installer" BUILD_TYPE="Formal" BUILD_ID="2021-11-23_00-00-10" SRC_BUILD_ID="36"
+
+JOB="WRCP_21.12_Build" BUILD_BY="jenkins" BUILD_NUMBER="28" BUILD_HOST='yow-cgts4-lx.wrs.com" BUILD_DATE="2021-11-23_00-00-10"
+
+Make sure your KUBECONFIG environement variable is set correctly for communicating with your cluster. 
+
+Running e2e conformace testing in focus mode: 
+
+Download sonobuoy tar file:
+wget https://github.com/vmware-tanzu/sonobuoy/release/download/v0.55.1/sonobuoy_0.55.1_linux_amd64.tar.gz
+
+Extract file:
+tar -xzvf ~/sonobuoy_0.55.1_linux_amd64.tar.gz
+
+Run TC: 
+./sonobuoy run --e2e-focus=",string - TC name>" --wait
+
+Show results:
+outfile=$(./sonobuoy retrieve) && ./sonobuoy results $outfile
+
+To clearn up Kubenetes objects created by sonobuoy, run
+sonobuoy delete
+
+We have one failed TC, we have reported this issue in https;//issueexplorer.com/
+https://issueexplorer.com/issue/kubenetes/kubebetes/105039
+Note:
+There is no fix for the issue. There was a try to change the test case to run "ingress resource create" just once in the "e2e test suite" but it was rejected by the community. 
+For reference see: https://gitbub.com/kubenetes/kubenetes/pull/100449
+There is a comment on https://issueexplorer.comissue/kubenetes/kubenetes/105039 saying that we should not run"e2e tests" on an existing cluster with validation webhook from specific Ingress Controllers
